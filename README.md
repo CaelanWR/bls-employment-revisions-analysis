@@ -39,7 +39,7 @@ Sample analysis scripts demonstrating potential uses:
 - Sector comparisons of revision magnitude and bias
 - Size vs. volatility relationships
 - COVID-era impacts on forecast accuracy
-- 15+ publication-quality charts with unified styling
+- 15+ charts 
 
 ## Quick Start
 
