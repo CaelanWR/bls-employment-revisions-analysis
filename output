@@ -1,1 +1,137 @@
+# BLS Employment Revisions Analysis
 
+## Overview
+
+This project analyzes how Bureau of Labor Statistics (BLS) employment estimates evolve as subsequent revisions are released. The BLS publishes preliminary employment figures approximately one week after each month ends, then revises these estimates in the following two monthly releases as more complete data becomes available. Understanding revision patterns is crucial for economic forecasting, policy analysis, and assessing the reliability of real-time labor market indicators.
+
+## Methodology
+
+### Data Collection
+- **Source**: Federal Reserve Economic Data (FRED) API
+- **Approach**: Retrieved multiple "vintages" of the same data point to track how estimates changed
+- **Coverage**: 2012-2025, analyzing ~2,000+ industry-month observations
+- **Key Innovation**: Optimized API calls with intelligent caching to handle FRED's rate limits while processing historical vintages efficiently
+
+### Revision Tracking
+For each employment observation, I captured three estimates:
+- **t**: Initial release (~1 week after month end)
+- **t+1**: First revision (1 month later)  
+- **t+2**: Second revision (2 months later)
+
+This allows analysis of both incremental revisions (t→t+1, t+1→t+2) and cumulative revisions (t→t+2).
+
+## Key Findings
+
+### 1. The Headline Number: Total Nonfarm Employment
+
+![PAYNSA Revisions](01_paynsa_revisions_with_trend.png)
+
+Total nonfarm employment (PAYNSA) revisions average **±50-60k jobs**, with notable volatility spikes during the COVID-19 pandemic. The 12-month rolling average shows periods of heightened uncertainty, particularly 2020-2021.
+
+![PAYNSA Revisions Percentage](01b_paynsa_revisions_percentage.png)
+
+To put these revisions in context: 50-60k jobs represents approximately **0.03-0.04% of total nonfarm employment** (~155M workers). While this seems small, it can significantly impact policy decisions and market reactions. The percentage view also shows that revision magnitudes have remained relatively stable as a share of total employment, even as the absolute numbers have grown with the expanding workforce.
+
+### 2. First Revisions Dominate
+
+![1-Month vs 2-Month Revisions](04b_paynsa_1m_vs_2m_levels.png)
+
+The **first revision (t→t+1) accounts for most of the total adjustment**. This suggests that:
+- BLS gets closer to the "true" value with the first revision
+- Subsequent revisions are incremental refinements
+- Real-time users should anticipate the largest changes one month out
+
+### 3. Sectoral Heterogeneity
+
+![Sector Revision Magnitude](06_sector_magnitude.png)
+
+Revision magnitude varies dramatically by industry. **Leisure & Hospitality** shows the largest average revisions (over 1% of employment), while utilities and government show the smallest. This reflects differences in:
+- Sample response rates
+- Employment volatility
+- Seasonal adjustment complexity
+
+### 4. The Size-Volatility Relationship
+
+![Size vs Volatility](07_size_vs_volatility_with_curve.png)
+
+Larger sectors generally have **more predictable revisions** (lower % volatility), following a power law relationship. However, Leisure & Hospitality is a notable outlier—despite its size, it remains highly unpredictable, likely due to high worker turnover and part-time employment.
+
+### 5. The COVID-19 Break
+
+![COVID Impact](12_covid_impact.png)
+
+The 2020-2021 period saw a **2-3x increase in revision magnitude** across sectors. This reflects unprecedented labor market disruption and challenges in measuring employment during lockdowns, remote work transitions, and rapid sectoral shifts.
+
+### 6. Directional Bias Varies by Sector
+
+![Upward vs Downward Bias](13_upward_downward_bias.png)
+
+Some sectors are consistently revised upward while others trend downward. This systematic bias suggests:
+- Different industries have different survey response patterns
+- Certain sectors may be structurally under-sampled in initial releases
+- Education and health services is the only sector with a average upward revision bias
+
+## Deep Dive: Leisure & Hospitality
+
+Leisure & Hospitality emerges as the most challenging sector to forecast. A detailed analysis of its sub-industries reveals why this sector is such an outlier.
+
+### 7. Sub-Industry Directional Patterns
+
+![L&H Directional Bias](18_lh_directional_bias.png)
+
+Within Leisure & Hospitality, sub-industries show distinct revision patterns:
+- **Food services and drinking places** consistently revised upward, suggesting initial underestimation
+- **Accommodation** shows more balanced revisions
+- **Arts, entertainment, and recreation** faces the most extreme swings
+
+### 8. Sub-Industry Volatility Drivers
+
+![L&H Revision Magnitude](17_lh_magnitude.png)
+
+Breaking down L&H by sub-industry shows which components drive the sector's overall volatility. The largest revision magnitudes come from industries with:
+- High turnover and part-time employment (food services)
+- Seasonal demand patterns (accommodation, recreation)
+- Small establishment sizes with lower survey response rates
+
+### 9. Sub-Industry Net Bias
+
+![L&H Net Revisions](16_lh_net_revisions.png)
+
+The average net revision by L&H sub-industry reveals systematic forecasting challenges. Food services consistently underestimates employment in initial releases, likely because:
+- Small restaurants and bars have lower survey response rates
+- High worker turnover makes headcount tracking difficult
+- Tip-based compensation complicates employment classification
+
+## Technical Implementation
+
+### Key Features
+- **Vintage data retrieval**: Accessed historical FRED snapshots to reconstruct revision history
+- **Rate-limited API handling**: Adaptive delays and exponential backoff for reliable data collection
+- **Efficient caching**: Deduplicated requests within and across series
+- **Robust parsing**: Handled BLS's hierarchical industry classification system
+
+### Code Structure
+```python
+# 1. OptimizedBLSAnalyzer: FRED API interaction with caching
+# 2. BLSExtractor: Industry classification and mapping  
+# 3. analyze_series_revisions_optimized(): Core revision calculation
+# 4. Visualization suite: 20+ charts for multi-level analysis
+```
+
+## Insights for Policy & Forecasting
+
+1. **Timing matters**: First revisions are critical—don't treat initial releases as final
+2. **Sector-specific uncertainty**: L&H requires wider confidence intervals in real-time
+3. **COVID's lasting impact**: Post-pandemic revision patterns haven't fully normalized
+4. **Systematic bias exists**: Some sectors are consistently under- or over-estimated initially
+5. **Size isn't everything**: Large sectors like L&H can still be highly unpredictable
+
+## Files
+- `bls_revision_analyzer.py` - Data collection and API interaction
+- `bls_visualizer.py` - Chart generation with unified styling
+- `bls_revisions_level2_with_paynsa.csv` - Main dataset (sector-level)
+- `bls_revisions_level4_70_Leisure_and_hospitality.csv` - Detailed L&H sub-industry data
+
+---
+
+*This analysis demonstrates proficiency in: API data collection, time series analysis, labor economics concepts, statistical visualization, and production-quality Python code for economic research.*
