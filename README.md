@@ -285,8 +285,3 @@ MIT License - free for academic, commercial, and personal use.
 - `CES` = Current Employment Statistics, Seasonally Adjusted
 - `CEU` = Current Employment Statistics, Not Seasonally Adjusted
 - This toolkit uses `CEU` (NSA) for revision analysis to avoid seasonal adjustment revisions
-
----
-
-**Contact**: [Your GitHub username]  
-**Related**: See `example_visualizations.py` for analysis of this dataset demonstrating revision patterns, sector volatility, and COVID-era impacts.
