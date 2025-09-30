@@ -17,7 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-API_KEY = "9c4dd7b3acc08743a923668a12f9bc61"
+API_KEY = 'your_key_here'
 
 RUN_LEVEL_2_ANALYSIS = False      # Broad industries + total nonfarm
 RUN_DETAILED_ANALYSIS = True    # Detailed industries within a supersector
@@ -560,4 +560,5 @@ if __name__ == "__main__":
     print("Analysis complete")
     for key, data in results.items():
         print(f"{key}: {len(data):,} records")
+
     print(f"{'='*60}")
