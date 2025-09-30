@@ -15,10 +15,11 @@ The result is a comprehensive dataset tracking how employment estimates evolved,
 ## Key Features
 
 ### Data Collection (`fetch_bls_revisions.py`)
+- **Automated industry discovery**: Downloads BLS classification files from public repository, parses tab-delimited format, builds complete mapping of industry codes → NAICS codes → series IDs → hierarchy levels
 - **Vintage data retrieval**: Reconstructs historical snapshots by querying FRED's vintage API
 - **Intelligent caching**: Deduplicates requests within series to minimize API calls
 - **Rate limit handling**: Adaptive delays and exponential backoff for FRED's 120 req/min limit
-- **Hierarchical industry support**: BLS display levels 0-4 (total → supersector → industry → sub-industry)
+- **Hierarchical industry support**: Automatically resolves BLS display levels 0-4 (total → supersector → industry → sub-industry) and parent-child relationships
 - **Robust error handling**: Tracks failed requests, retries with backoff, validates responses
 
 ### Output Dataset Structure
@@ -109,6 +110,17 @@ Example for January 2024 employment:
 This toolkit retrieves all three vintages for each month and calculates the differences.
 
 ## Technical Implementation
+
+### Industry Classification System
+
+The toolkit automatically builds the complete BLS industry universe without requiring manual series ID lists:
+
+1. **Downloads classification file**: Fetches `ce.industry` from BLS's public data repository (https://download.bls.gov/pub/time.series/ce/)
+2. **Parses industry metadata**: Extracts industry codes, NAICS codes, names, and hierarchy levels from tab-delimited format
+3. **Generates series IDs**: Constructs FRED series IDs using BLS naming convention (CES/CEU + 8-digit code + data type)
+4. **Resolves hierarchies**: Maps supersector parent-child relationships (e.g., Manufacturing 30 → Durable 31 + Nondurable 32)
+
+This means you can analyze any industry in the BLS hierarchy without manually maintaining series ID lists - just specify the supersector code and level.
 
 ### Optimization Strategies
 
