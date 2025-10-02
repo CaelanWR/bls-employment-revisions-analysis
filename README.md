@@ -173,7 +173,6 @@ Analysis of 2012-2025 data reveals:
 5. **Systematic biases**: Some sectors show persistent directional bias - certain industries are consistently revised upward while others trend downward.
 
 See `example_visualizations.py` output for detailed charts and analysis.
-
 ## Key Visualizations
 
 The toolkit enables multi-scale analysis from aggregate employment to detailed sub-industries. Selected charts below demonstrate the range of patterns uncovered in the 2012-2025 data.
@@ -182,31 +181,31 @@ The toolkit enables multi-scale analysis from aggregate employment to detailed s
 
 ![Size vs Volatility](output/10_size_vs_volatility.png)
 
-Larger sectors generally show lower percentage revision volatility, following an approximate power law. Leisure & Hospitality is a notable outlier—despite its size, it maintains high volatility consistent with measurement challenges in high-turnover industries. Mining and Information, as smaller sectors, show the highest unpredictability.
+Larger sectors generally show lower percentage revision volatility, following an approximate power law. Leisure & Hospitality is a notable outlier—despite its size, it maintains high volatility consistent with known measurement challenges in high-turnover industries. Mining and Information, as smaller sectors, show the highest unpredictability.
 
 ### Total Nonfarm Employment: Revision History
 
 ![PAYNSA Revisions Over Time](output/01_paynsa_revisions_with_trend.png)
 
-Monthly revisions typically range ±50-60k jobs for the headline employment figure. The 2020-2021 period shows extreme spikes (±600k) reflecting pandemic-related sampling challenges. Both first (blue) and second (orange) revisions contribute substantially, with recent years showing systematic patterns rather than random noise.
+Monthly revisions typically range ±50-60k jobs for the headline employment figure. The 2020-2021 period shows extreme spikes (±600k) reflecting pandemic-related sampling challenges. Both first (blue) and second (orange) revisions contribute substantially throughout the period.
 
 ### Revision Magnitude by Sector
 
 ![Sector Revision Magnitude](output/09_sector_magnitude.png)
 
-Forecast errors vary dramatically across industries. Mining and Information average 0.30-0.35% revisions, while Manufacturing averages just 0.05%—a 7x difference. This likely reflects both response rate differences and intrinsic employment volatility in each sector.
+**Magnitude** measures the average absolute size of revisions regardless of direction. Mining and Information show 0.30-0.35% average absolute revisions, while Manufacturing shows 0.05%—a 7x difference. This metric identifies which sectors are hardest to estimate accurately in preliminary releases.
 
 ### COVID's Impact on Measurement Quality
 
 ![COVID Impact Comparison](output/14_covid_impact.png)
 
-The pandemic period (2020-2021) saw revision magnitudes increase 2.4x and volatility increase 3x versus pre/post periods. This quantifies the measurement crisis during lockdowns and rapid sectoral shifts. The post-2022 recovery suggests data collection has largely stabilized, though volatility remains elevated.
+The pandemic period (2020-2021) saw revision magnitudes increase 2.4x and volatility increase 3x versus pre-COVID (2015-2019). **Magnitude** (dark blue) shows the average absolute revision size, while **volatility** (orange) measures the standard deviation—i.e., the unpredictability of revision sizes. Post-2022 data shows both metrics have declined substantially from COVID-era peaks.
 
 ### Cross-Sector Revision Correlations
 
 ![Correlation Heatmap](output/11_correlation_heatmap.png)
 
-Strong positive correlations (Construction ↔ Finance: 0.64, Leisure ↔ Other Services: 0.80) suggest common response timing or economic linkages. Negative correlations (Leisure ↔ Government: -0.40, Mining ↔ Information: -0.57) indicate sectors face distinct measurement challenges or counter-cyclical patterns.
+Strong positive correlations (Construction ↔ Finance: 0.64, Leisure ↔ Other Services: 0.80) indicate sectors whose revisions tend to move together. Negative correlations (Leisure ↔ Government: -0.40, Mining ↔ Information: -0.57) indicate sectors whose revisions tend to move in opposite directions.
 
 ---
 
