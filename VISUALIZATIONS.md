@@ -59,20 +59,6 @@ Same comparison aggregated across all level 2 industries in percentage terms. Fi
 
 Comparison of revision characteristics across 11 major industry sectors.
 
-Sector,N_Observations,Avg_Employment_T,Avg_Revision_1M,StdDev_Revision_1M,Avg_AbsRevision_1M,Avg_Revision_2M,StdDev_Revision_2M,Avg_AbsRevision_2M,Avg_Revision_1M_Pct,StdDev_Revision_1M_Pct,Avg_AbsRevision_1M_Pct,Avg_Revision_2M_Pct,StdDev_Revision_2M_Pct,Avg_AbsRevision_2M_Pct
-Total Nonfarm (PAYNSA),141,146615.99,18.4,95.77,47.51,3.71,132.86,44.54,0.01,0.07,0.03,0.0,0.09,0.03
-Construction,141,7063.48,1.72,18.0,7.89,2.91,19.3,6.4,0.03,0.28,0.11,0.05,0.31,0.1
-Financial activities,141,8546.29,1.48,14.64,6.06,0.79,15.55,4.98,0.02,0.17,0.07,0.01,0.18,0.06
-Government,141,22255.01,3.72,42.38,25.11,4.36,31.32,14.41,0.02,0.19,0.11,0.02,0.14,0.06
-Information,141,2803.3,2.59,16.03,7.96,1.69,16.84,6.61,0.09,0.57,0.28,0.06,0.6,0.24
-Leisure and hospitality,141,15471.18,1.81,63.93,22.57,-1.14,67.61,20.2,0.02,0.43,0.15,-0.0,0.44,0.13
-Manufacturing,141,12485.74,-0.81,12.6,7.66,-1.07,15.91,6.89,-0.01,0.1,0.06,-0.01,0.13,0.06
-Mining and logging,141,726.49,-0.67,7.13,2.62,-1.16,7.13,2.26,-0.1,1.06,0.38,-0.17,1.07,0.32
-Other services,141,5704.12,-1.18,20.08,6.57,-1.36,21.14,5.91,-0.02,0.35,0.12,-0.02,0.37,0.1
-Private education and health services,141,23377.62,2.79,23.42,14.75,1.74,45.18,13.4,0.01,0.1,0.06,0.01,0.21,0.06
-Professional and business services,141,20757.67,2.17,50.59,19.22,-1.97,54.68,18.31,0.01,0.23,0.09,-0.01,0.25,0.09
-Trade, transportation, and utilities,141,27425.09,4.77,54.99,23.09,-1.09,44.27,16.04,0.02,0.2,0.08,-0.0,0.16,0.06
-
 ### Chart 8: Net Revision by Sector
 
 ![Sector Net Revisions](output/08_sector_net_revisions.png)
