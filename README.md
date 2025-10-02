@@ -187,8 +187,7 @@ Larger sectors generally show lower percentage revision volatility, following an
 
 ![PAYNSA Revisions Over Time](output/01_paynsa_revisions_with_trend.png)
 
-Monthly revisions typically range ±50-60k jobs for the headline employment figure. The 2020-2021 period shows extreme spikes (±600k) reflecting pandemic-related sampling challenges. Both first (blue) and second (orange) revisions contribute substantially throughout the period.
-
+Monthly revisions typically range ±50-60k jobs for the headline employment figure. Several Periods show extreme spikes (±600k).
 ### Revision Magnitude by Sector
 
 ![Sector Revision Magnitude](output/09_sector_magnitude.png)
