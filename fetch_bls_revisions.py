@@ -8,25 +8,31 @@ import pandas as pd
 import requests
 import time
 from datetime import datetime, timedelta
-import urllib3
 from dateutil.relativedelta import relativedelta
 import hashlib
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-API_KEY = 'your_key_here'
 
-RUN_LEVEL_2_ANALYSIS = False      # Broad industries + total nonfarm
-RUN_DETAILED_ANALYSIS = True    # Detailed industries within a supersector
+# Replace with your FRED API key from https://fred.stlouisfed.org/docs/api/api_key.html
+API_KEY = "your_api_key_here"
 
-DETAILED_SUPERSECTOR_CODE = "70"  # "30"=Manufacturing, "42"=Retail, etc.
+if API_KEY == "your_api_key_here":
+    raise ValueError("Please replace 'your_api_key_here' with your actual FRED API key")
+
+# Analysis mode toggles
+RUN_LEVEL_2_ANALYSIS = True      # Broad industries + total nonfarm
+RUN_DETAILED_ANALYSIS = True      # Detailed industries within a supersector
+
+# Detailed analysis parameters
+DETAILED_SUPERSECTOR_CODE = "30"  # "30"=Manufacturing, "42"=Retail, etc.
 DETAILED_LEVEL = 4                # Display level to analyze (typically 3 or 4)
 
+# Date range for analysis
 START_DATE = "2012-01-01"
 END_DATE = "2025-07-31"
+
 # =============================================================================
 
 
@@ -56,11 +62,14 @@ class OptimizedBLSAnalyzer:
     def _calculate_adaptive_delay(self):
         """Dynamically adjust delay based on API response times"""
         base_delay = 0.5
+        
+        # Use recent response times to calculate optimal delay
         if len(self.response_times) >= 5:
             recent_times = self.response_times[-10:]
             avg_response_time = sum(recent_times) / len(recent_times)
             adaptive_delay = max(base_delay, avg_response_time * 1.5)
             return min(adaptive_delay, 2.0)
+        
         return base_delay
     
     def _get_cache_key(self, series_id: str, realtime_date: str, obs_start: str, obs_end: str):
@@ -72,7 +81,7 @@ class OptimizedBLSAnalyzer:
         """Execute API call with retry logic and cache management"""
         params.update({'api_key': self.api_key, 'file_type': 'json'})
         
-        # Check if we've already fetched this data
+        # Check cache before making API call
         if endpoint == 'series/observations':
             cache_key = self._get_cache_key(
                 params.get('series_id', ''),
@@ -91,6 +100,7 @@ class OptimizedBLSAnalyzer:
                 self.request_count += 1
                 time.sleep(self._calculate_adaptive_delay())
                 
+                # Progress indicator every 50 requests
                 if self.request_count % 50 == 0:
                     elapsed = time.time() - self.start_time
                     rate = self.request_count / (elapsed / 60)
@@ -100,12 +110,12 @@ class OptimizedBLSAnalyzer:
                 response = requests.get(
                     f"{self.base_url}/{endpoint}",
                     params=params,
-                    verify=False,
                     timeout=30
                 )
                 request_time = time.time() - start_request
                 self.response_times.append(request_time)
                 
+                # Keep only recent response times for adaptive delay calculation
                 if len(self.response_times) > 20:
                     self.response_times = self.response_times[-20:]
                 
@@ -115,11 +125,13 @@ class OptimizedBLSAnalyzer:
                         self.vintage_cache[cache_key] = result
                     return result
                 elif response.status_code == 429:
+                    # Rate limited - wait with exponential backoff
                     wait_time = min(20, 5 * (2 ** attempt))
                     print(f"Rate limited, waiting {wait_time}s")
                     time.sleep(wait_time)
                     continue
                 elif response.status_code == 400:
+                    # Bad request - mark as failed to avoid retrying
                     if endpoint == 'series/observations':
                         self.failed_requests.add(cache_key)
                     return None
@@ -150,6 +162,7 @@ class OptimizedBLSAnalyzer:
         if not response or 'observations' not in response:
             return {}
         
+        # Parse observations into dictionary
         data = {}
         for obs in response['observations']:
             if obs['value'] != '.':
@@ -163,12 +176,13 @@ class OptimizedBLSAnalyzer:
         """
         Calculate when each data point was released and subsequently revised
         
-        BLS releases employment data ~1 week into the following month, then
-        revises it in the next two monthly releases (t+1 and t+2 revisions)
+        BLS releases employment data approximately 1 week into the following month,
+        then revises it in the next two monthly releases (t+1 and t+2 revisions).
         """
         vintage_requests = {}
         
         for obs_date in obs_months:
+            # Initial release is ~6 days into following month
             release_month = obs_date + relativedelta(months=1)
             initial_release = release_month + timedelta(days=6)
             first_revision = initial_release + relativedelta(months=1)
@@ -180,6 +194,7 @@ class OptimizedBLSAnalyzer:
                 second_revision.strftime('%Y-%m-%d')
             ]
             
+            # Track which observation dates are needed for each vintage
             for vintage_date in vintage_dates:
                 if vintage_date not in vintage_requests:
                     vintage_requests[vintage_date] = set()
@@ -214,15 +229,18 @@ class OptimizedBLSAnalyzer:
         return pd.DataFrame(revisions) if revisions else None
     
     def _process_chunk_revisions(self, series_id: str, obs_months, vintage_data):
-        """Extract initial estimates and revisions from vintage snapshots.
-        Adds both cumulative (t→t2 vs t) and incremental (t1→t2) revisions.
+        """
+        Extract initial estimates and revisions from vintage snapshots.
+        
+        Calculates both incremental revisions (t to t1, t1 to t2) and cumulative
+        revisions (t to t2) to show how estimates evolve over time.
         """
         revisions = []
 
         for obs_date in obs_months:
             obs_date_str = obs_date.strftime('%Y-%m-%d')
 
-            # Release & revision vintage dates (initial ~t+6d; then +1m, +2m)
+            # Calculate vintage dates: initial release ~6 days after month, then monthly revisions
             release_month = obs_date + relativedelta(months=1)
             initial_release = release_month + timedelta(days=6)
             first_revision = initial_release + relativedelta(months=1)
@@ -248,7 +266,7 @@ class OptimizedBLSAnalyzer:
                 estimates['t2'] = vintage_data[second_rev_date_str][obs_date_str]
                 vintages['t2'] = second_revision
 
-            # Build record
+            # Build record with estimates and vintages
             if 't' in estimates:
                 est_t  = estimates.get('t')
                 est_t1 = estimates.get('t1')
@@ -265,31 +283,32 @@ class OptimizedBLSAnalyzer:
                     'vintage_t2': vintages.get('t2'),
                 }
 
-                # ---------- Existing columns (backward compatible) ----------
-                # 1-month = t1 - t  (incremental first step)
+                # First revision: t to t1 (incremental change after first month)
                 if est_t is not None and est_t1 is not None:
                     rec['revision_1month'] = est_t1 - est_t
                     rec['revision_1month_pct'] = ((rec['revision_1month'] / est_t) * 100) if est_t else None
 
-                # 2-month (current behavior) = t2 - t  (CUMULATIVE vs initial)
-                if est_t is not None and est_t2 is not None:
-                    rec['revision_2month'] = est_t2 - est_t
-                    rec['revision_2month_pct'] = ((rec['revision_2month'] / est_t) * 100) if est_t else None
+                # Second revision: t1 to t2 (incremental change after second month)
+                if est_t1 is not None and est_t2 is not None:
+                    rec['revision_2month'] = est_t2 - est_t1
+                    rec['revision_2month_pct'] = ((rec['revision_2month'] / est_t1) * 100) if est_t1 else None
 
-                # t1→t2 incremental step (you already computed this name; keep it)
+                # Also store as explicit incremental revision
                 if est_t1 is not None and est_t2 is not None:
                     rec['revision_t1_to_t2'] = est_t2 - est_t1
 
-                # ---------- New, explicit aliases to avoid confusion ----------
-                # cumulative aliases (equal to your existing fields)
-                rec['rev2_cum'] = rec.get('revision_2month')
-                rec['rev2_cum_pct'] = rec.get('revision_2month_pct')
+                # Cumulative revision from initial to final (t to t2)
+                if est_t is not None and est_t2 is not None:
+                    rec['rev2_cum'] = est_t2 - est_t
+                    rec['rev2_cum_pct'] = ((rec['rev2_cum'] / est_t) * 100) if est_t else None
+                else:
+                    rec['rev2_cum'] = None
+                    rec['rev2_cum_pct'] = None
 
-                # incremental second-step with clear name
+                # Incremental second-step revision (same as revision_2month, explicit alias)
                 if est_t1 is not None and est_t2 is not None:
                     rev2_incr = est_t2 - est_t1
                     rec['rev2_incr'] = rev2_incr
-                    # % base on t1 for the incremental step
                     rec['rev2_incr_pct'] = ((rev2_incr / est_t1) * 100) if est_t1 else None
                 else:
                     rec['rev2_incr'] = None
@@ -298,7 +317,6 @@ class OptimizedBLSAnalyzer:
                 revisions.append(rec)
 
         return revisions
-
 
     def build_dataset(self, series_list, start_date, end_date):
         """Compile revision data across multiple employment series"""
@@ -315,6 +333,7 @@ class OptimizedBLSAnalyzer:
                 all_data.append(series_data)
                 successful += 1
             
+            # Brief pause between series to avoid rate limiting
             if i < len(series_list) - 1:
                 time.sleep(1)
         
@@ -346,20 +365,23 @@ class BLSExtractor:
             f"{self.base_url}{filename}",
             f"https://download.bls.gov/pub/time.series/ce/{filename}"
         ]
+        
         for url in urls:
             try:
-                response = requests.get(url, headers=headers, verify=False, timeout=30)
+                response = requests.get(url, headers=headers, timeout=30)
                 if response.status_code == 200:
                     return response.text
             except Exception:
                 continue
+        
         raise Exception("Could not download BLS industry file")
 
     def parse_industry_file(self, content: str):
         """Parse tab-delimited BLS industry classification format"""
         lines = content.strip().split('\n')
         industries = []
-        for line in lines[1:]:
+        
+        for line in lines[1:]:  # Skip header row
             parts = line.split('\t')
             if len(parts) >= 5:
                 try:
@@ -371,6 +393,7 @@ class BLSExtractor:
                     })
                 except Exception:
                     continue
+        
         return pd.DataFrame(industries)
 
     def get_supersector_mapping(self):
@@ -421,10 +444,15 @@ class BLSExtractor:
         content = self.download_bls_file('ce.industry')
         df = self.parse_industry_file(content)
         supersector_map = self.get_supersector_mapping()
+        
+        # Add supersector information to each industry
         df['supersector_code'] = df['industry_code'].str[:2]
         df['supersector_name'] = df['supersector_code'].map(supersector_map)
+        
+        # Generate seasonally adjusted (SA) and not seasonally adjusted (NSA) series IDs
         df['sa_series_id'] = 'CES' + df['industry_code'] + '01'
         df['nsa_series_id'] = 'CEU' + df['industry_code'] + '01'
+        
         return df.sort_values(['supersector_code', 'display_level', 'industry_code']).reset_index(drop=True)
 
 
@@ -443,7 +471,7 @@ def analyze_supersector_detailed(api_key, supersector_code, detail_level, start_
     effective_codes = extractor.get_effective_supersector_codes(supersector_code)
     supersector_map = extractor.get_supersector_mapping()
     
-    # Debug: Show what levels exist for this supersector
+    # Show available levels for this supersector
     matching_industries = bls_universe[bls_universe['supersector_code'].isin(effective_codes)]
     if not matching_industries.empty:
         available_levels = matching_industries['display_level'].value_counts().sort_index()
@@ -452,14 +480,15 @@ def analyze_supersector_detailed(api_key, supersector_code, detail_level, start_
             print(f"  Level {level}: {count} industries")
         print(f"\nUsing level {detail_level} for analysis")
     
+    # Filter to requested detail level
     supersector_detailed = bls_universe[
         (bls_universe['supersector_code'].isin(effective_codes)) & 
         (bls_universe['display_level'] == detail_level)
     ].copy()
     
     if supersector_detailed.empty:
-        print(f"\n❌ No level {detail_level} industries found")
-        print(f"   Try a different DETAILED_LEVEL value (typically 3 or 4)")
+        print(f"\nNo level {detail_level} industries found")
+        print(f"Try a different DETAILED_LEVEL value (typically 3 or 4)")
         return None
     
     # Use the requested supersector name for the filename
@@ -471,10 +500,12 @@ def analyze_supersector_detailed(api_key, supersector_code, detail_level, start_
     print(f"Found {len(detailed_series)} series across codes {effective_codes}")
     print(f"{'='*60}")
     
+    # Run analysis
     analyzer = OptimizedBLSAnalyzer(api_key)
     revision_dataset = analyzer.build_dataset(detailed_series, start_date, end_date)
     
     if not revision_dataset.empty:
+        # Merge industry names and metadata
         revision_dataset = revision_dataset.merge(
             supersector_detailed[['nsa_series_id', 'industry_name', 'supersector_name']],
             left_on='series_id',
@@ -482,6 +513,7 @@ def analyze_supersector_detailed(api_key, supersector_code, detail_level, start_
             how='left'
         )
         
+        # Save to CSV
         safe_name = supersector_name.replace(' ', '_').replace(',', '').replace('/', '_')
         filename = f"bls_revisions_level{detail_level}_{supersector_code}_{safe_name}.csv"
         revision_dataset.to_csv(filename, index=False)
@@ -521,6 +553,7 @@ def main():
         revision_dataset = analyzer.build_dataset(nsa_series, START_DATE, END_DATE)
         
         if not revision_dataset.empty:
+            # Merge industry metadata
             revision_dataset = revision_dataset.merge(
                 level_2[['nsa_series_id', 'industry_name', 'supersector_name', 'display_level']],
                 left_on='series_id',
@@ -560,5 +593,4 @@ if __name__ == "__main__":
     print("Analysis complete")
     for key, data in results.items():
         print(f"{key}: {len(data):,} records")
-
     print(f"{'='*60}")
