@@ -1,6 +1,6 @@
 # BLS Employment Revisions Toolkit
 
-> Python toolkit for retrieving BLS employment vintage data from FRED API and calculating month-over-month revisions across industry hierarchies (2012-present)
+> Python toolkit for retrieving BLS employment vintage data from FRED API and calculating revisions across industry hierarchies (2012-present)
 
 ## What This Does
 
@@ -28,18 +28,18 @@ Each row represents one observation month with three estimates:
 - `estimate_t1`: First revision (1 month later)
 - `estimate_t2`: Second revision (2 months later)
 - `revision_1month`: t+1 minus t (incremental first revision)
-- `revision_2month`: t+2 minus t (cumulative total revision)
-- `rev2_incr`: t+2 minus t+1 (incremental second revision)
+- `revision_2month`: t+2 minus t+1 (incremental second revision)
+- `rev2_cum`: t+2 minus t (cumulative total revision from initial to final)
+- `rev2_incr`: t+2 minus t+1 (same as revision_2month, explicit alias)
 - Percentage versions of all revisions
 - Industry metadata (name, supersector, NAICS code, hierarchy level)
 
 ### Example Visualizations (`example_visualizations.py`)
-Sample analysis scripts demonstrating potential uses:
-- Time series of revision patterns with rolling averages
-- Sector comparisons of revision magnitude and bias
-- Size vs. volatility relationships
-- COVID-era impacts on forecast accuracy
-- 15+ charts 
+18 production-ready charts demonstrating comprehensive analysis capabilities:
+- **PAYNSA analysis** (7 charts): Time series, distributions, cumulative revisions, annual patterns
+- **Cross-sector comparisons** (8 charts): Net revisions, magnitude, size vs. volatility, correlations, heatmaps, seasonality, COVID impact, directional bias
+- **Manufacturing deep dive** (3 charts): Sub-industry net revisions, magnitude, and directional patterns
+- **Summary statistics**: Automated CSV export with comprehensive sector metrics 
 
 ## Quick Start
 
@@ -89,6 +89,12 @@ Common supersector codes:
 ```bash
 python example_visualizations.py
 ```
+
+This produces:
+- 18 PNG charts analyzing revision patterns across sectors and time
+- `sector_summary_statistics.csv` with comprehensive sector metrics
+
+Note: Requires `data/bls_revisions_level2_with_paynsa.csv` from step 2. Manufacturing deep dive charts (16-18) are optional and require the detailed manufacturing dataset.
 
 ## Understanding BLS Revision Timing
 
@@ -147,8 +153,9 @@ vintage_t1 = get_data_as_of_date(series_id, revision_date_1, obs_start, obs_end)
 vintage_t2 = get_data_as_of_date(series_id, revision_date_2, obs_start, obs_end)
 
 # Compare to calculate revisions
-revision_1month = vintage_t1[obs_month] - vintage_t[obs_month]
-revision_2month = vintage_t2[obs_month] - vintage_t[obs_month]
+revision_1month = vintage_t1[obs_month] - vintage_t[obs_month]  # Incremental first step
+revision_2month = vintage_t2[obs_month] - vintage_t1[obs_month]  # Incremental second step
+rev2_cum = vintage_t2[obs_month] - vintage_t[obs_month]  # Cumulative total revision
 ```
 
 ## Key Findings from Sample Analysis
@@ -177,9 +184,12 @@ bls-employment-revisions-analysis/
 ├── requirements.txt
 ├── .gitignore
 ├── data/
-│   └── README.md                    # Data generation instructions
+│   ├── README.md                    # Data generation instructions
+│   ├── bls_revisions_level2_with_paynsa.csv          # Required for visualizations
+│   └── bls_revisions_level4_30_Manufacturing.csv     # Optional, for manufacturing charts
 └── output/
-    └── [generated charts]
+    ├── sector_summary_statistics.csv  # Automated metrics export
+    └── [18 generated PNG charts]
 ```
 
 ## Output Files
@@ -193,6 +203,12 @@ bls-employment-revisions-analysis/
 - Sub-industries within a specific supersector
 - Granular breakdowns (e.g., "Food services and drinking places")
 - Same time range, more detailed industry splits
+
+**Summary Statistics** (`sector_summary_statistics.csv`):
+- Comprehensive metrics for all level 2 sectors plus PAYNSA: mean, std dev, absolute revisions (levels and percentages)
+- Generated automatically when running `example_visualizations.py`
+- Includes both 1-month and 2-month revision statistics
+- One row per broad industry sector (Manufacturing, Retail, Healthcare, etc.)
 
 ## Configuration Options
 
