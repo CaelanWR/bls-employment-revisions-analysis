@@ -14,7 +14,8 @@ Analysis of the headline employment figure used in policy discussions and market
 
 ![PAYNSA Revisions with Trend](output/01_paynsa_revisions_with_trend.png)
 
-First revisions (T+1, blue) and second revisions (T+2, orange) for each month. Typical revisions range ±50-60k jobs. COVID-era (2020-2021) shows extreme volatility with revisions exceeding ±600k.
+First revisions (T+1, blue) and second revisions (T+2, orange) for each month. Typical revisions range ±50-60k jobs during stable periods. The data shows two distinct episodes of extreme volatility: 2013 with revisions reaching ~600k, and 2020-2023 with revisions ranging from -750k to +600k. The relatively stable 2015-2019 period between these episodes shows substantially smaller revisions.
+
 
 ### Chart 2: Cumulative Net Revisions
 
@@ -98,7 +99,7 @@ Average absolute revision magnitude by calendar month. December shows 1.0% avera
 
 ![COVID Impact](output/14_covid_impact.png)
 
-Comparison of revision characteristics across three periods. **Magnitude** (blue) shows average absolute revision size. **Volatility** (orange) shows standard deviation. COVID era (2020-2021) shows 2.4x higher magnitude and 3x higher volatility than pre-COVID (2015-2019). Post-COVID (2022+) shows substantial recovery.
+Comparison of revision characteristics across three periods. Magnitude (blue) shows average absolute revision size. Volatility (orange) shows standard deviation. The stable period (2015-2019) shows the lowest values, while both earlier (2012-2014, not shown separately) and COVID-era periods exhibited significantly elevated volatility. COVID era (2020-2021) shows 2.4x higher magnitude and 3x higher volatility compared to the 2015-2019 baseline. Post-COVID (2022+) shows partial recovery but remains above the 2015-2019 baseline.
 
 ### Chart 15: Directional Bias by Sector
 
