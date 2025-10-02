@@ -305,16 +305,6 @@ The code can be modified to calculate longer revision windows (e.g., t→t+12 fo
 - **Benchmark revisions**: Annual benchmark revisions (beyond t+2) are not captured in this analysis
 - **Industry reclassification**: NAICS code changes over time may affect comparability for some detailed industries
 
-## Use Cases
-
-This dataset enables analysis of:
-- Forecast accuracy by sector and time period
-- Systematic over/underestimation patterns
-- Impact of economic shocks (COVID-19) on measurement quality
-- Relationship between industry characteristics and revision volatility
-- Optimal forecast adjustment strategies
-- Policy implications of preliminary data reliability
-
 ## Requirements
 
 - Python 3.7+
