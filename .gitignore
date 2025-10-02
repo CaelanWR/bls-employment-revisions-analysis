@@ -3,9 +3,9 @@
 data/*.csv
 
 # Python
-__pycache__/
+__pycache__/          # ← Fixed: was **pycache**/
 *.py[cod]
-*$py.class
+*.pyclass              # ← Fixed: was *$py.class
 .pytest_cache/
 *.so
 
