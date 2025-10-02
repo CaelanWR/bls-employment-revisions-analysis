@@ -215,6 +215,7 @@ Strong positive correlations (Construction ↔ Finance: 0.64, Leisure ↔ Other 
 ```
 bls-employment-revisions-analysis/
 ├── README.md
+├── VISUALIZATIONS.md                # Complete chart portfolio (all 18 charts)
 ├── fetch_bls_revisions.py          # Main data collection
 ├── example_visualizations.py        # Sample analysis charts
 ├── requirements.txt
@@ -224,8 +225,8 @@ bls-employment-revisions-analysis/
 │   ├── bls_revisions_level2_with_paynsa.csv          # Required for visualizations
 │   └── bls_revisions_level4_30_Manufacturing.csv     # Optional, for manufacturing charts
 └── output/
-    ├── sector_summary_statistics.csv  # Automated metrics export
-    └── [18 generated PNG charts]
+├── sector_summary_statistics.csv  # Automated metrics export (12 sectors × 15 metrics)
+└── [18 generated PNG charts]
 ```
 
 ## Output Files
@@ -235,16 +236,19 @@ bls-employment-revisions-analysis/
 - Total nonfarm employment (PAYNSA series)
 - ~2,000 observation-months per sector (2012-2025)
 
-**Detailed Analysis** (e.g., `bls_revisions_level4_70_Leisure_and_hospitality.csv`):
+**Detailed Analysis** (e.g., `bls_revisions_level4_30_Manufacturing.csv`):
 - Sub-industries within a specific supersector
 - Granular breakdowns (e.g., "Food services and drinking places")
 - Same time range, more detailed industry splits
 
-**Summary Statistics** (`sector_summary_statistics.csv`):
-- Comprehensive metrics for all level 2 sectors plus PAYNSA: mean, std dev, absolute revisions (levels and percentages)
+**Summary Statistics** (`output/sector_summary_statistics.csv`):
+- 12 rows: Total Nonfarm (PAYNSA) + 11 level 2 sectors
+- 15 columns covering:
+  - Observation count and average employment level
+  - 1-month revisions: mean, std dev, average absolute (in levels and %)
+  - 2-month revisions: mean, std dev, average absolute (in levels and %)
 - Generated automatically when running `example_visualizations.py`
-- Includes both 1-month and 2-month revision statistics
-- One row per broad industry sector (Manufacturing, Retail, Healthcare, etc.)
+- Use for quick comparison of revision characteristics across sectors
 
 ## Configuration Options
 
