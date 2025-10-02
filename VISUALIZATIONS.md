@@ -137,13 +137,6 @@ Percentage of months with upward revisions minus 50% for each sub-industry. Tran
 
 **Data Coverage**: All charts use data from 2012-2025 unless otherwise specified
 
-**Revision Definitions**:
-- First revision (T+1): Change from initial estimate to first monthly update
-- Second revision (T+2): Change from first update to second monthly update
-- Magnitude: Average absolute value of revisions
-- Volatility: Standard deviation of revisions
-- Net/Directional: Average signed value (positive = underestimation, negative = overestimation)
-
 **Series Used**:
 - PAYNSA: Total nonfarm employment, not seasonally adjusted
 - Level 2 sectors: 11 major industry supersectors
