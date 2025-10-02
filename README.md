@@ -8,7 +8,7 @@ The Bureau of Labor Statistics releases preliminary employment figures ~1 week a
 
 1. **Fetches vintage snapshots** from FRED API showing what the data looked like at different points in time
 2. **Calculates revisions** by comparing initial estimates (t) against first (t+1) and second (t+2) revisions
-3. **Outputs clean datasets** ready for analysis across 50+ industries and multiple hierarchy levels
+3. **Outputs clean datasets** ready for analysis across industries at multiple hierarchy levels
 
 The result is a comprehensive dataset tracking how employment estimates evolved, enabling analysis of forecast accuracy, systematic biases, and sector-specific volatility.
 
