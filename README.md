@@ -222,8 +222,8 @@ bls-employment-revisions-analysis/
 ├── .gitignore
 ├── data/
 │   ├── README.md                    # Data generation instructions
-│   ├── bls_revisions_level2_with_paynsa.csv          # Required for visualizations
-│   └── bls_revisions_level4_30_Manufacturing.csv     # Optional, for manufacturing charts
+│   ├── bls_revisions_level2_with_paynsa.csv          
+│   └── bls_revisions_level4_30_Manufacturing.csv     
 └── output/
 ├── sector_summary_statistics.csv  # Automated metrics export (12 sectors × 15 metrics)
 └── [18 generated PNG charts]
