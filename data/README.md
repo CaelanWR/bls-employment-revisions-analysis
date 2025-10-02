@@ -90,8 +90,8 @@ Typical file sizes:
 
 Larger files may result from:
 - Longer time periods
-- More detailed hierarchy levels (level 5-7)
-- Additional supersectors in detailed analysis
+- Analyzing all level 4 industries instead of a single supersector
+- Including multiple supersectors in detailed analysis
 
 ## Troubleshooting
 
