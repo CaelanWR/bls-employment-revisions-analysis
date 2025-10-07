@@ -164,7 +164,7 @@ Analysis of 2012-2025 data reveals:
 
 1. **First revisions dominate**: The t→t+1 revision accounts for most of the total adjustment. Subsequent t+1→t+2 changes are typically incremental refinements.
 
-2. **Sector heterogeneity**: Leisure & Hospitality shows average revisions exceeding 1% of employment, while utilities and government average under 0.2%. This reflects differences in survey response rates and employment volatility.
+2. **Sector heterogeneity**: Leisure & Hospitality shows average revisions exceeding 0.4% of employment, while utilities and government average under 0.2%. This reflects differences in survey response rates and employment volatility.
 
 3. **Size-volatility relationship**: Larger sectors generally have more predictable revisions (lower % volatility), following a power law. However, Leisure & Hospitality is a notable outlier due to high turnover and part-time employment.
 
